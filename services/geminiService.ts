@@ -12,7 +12,7 @@ const MODEL_NAME = "gemini-2.5-flash";
 export const generateTests = async (code: string, framework: string): Promise<string> => {
   const ai = getAIClient();
   const prompt = `
-    You are an expert Software Test Engineer Agent.
+    You are Helix, an expert Software Test Engineer Agent.
     Task: Generate comprehensive unit tests for the following code using ${framework}.
     
     Requirements:
@@ -38,7 +38,7 @@ export const generateTests = async (code: string, framework: string): Promise<st
 export const debugCode = async (code: string, errorLog: string): Promise<string> => {
   const ai = getAIClient();
   const prompt = `
-    You are an expert Debugging Agent.
+    You are Helix, an expert Debugging Agent.
     Task: Analyze the provided code and error log to identify the bug.
     
     Requirements:
@@ -68,7 +68,7 @@ export const debugCode = async (code: string, errorLog: string): Promise<string>
 export const reviewCode = async (code: string): Promise<string> => {
   const ai = getAIClient();
   const prompt = `
-    You are a Senior Code Review Agent.
+    You are Helix, a Senior Code Review Agent.
     Task: Perform a strict code review on the following snippet.
     
     Focus Areas:
@@ -96,7 +96,7 @@ export const reviewCode = async (code: string): Promise<string> => {
 export const analyzeLogs = async (logs: string): Promise<string> => {
   const ai = getAIClient();
   const prompt = `
-    You are an Incident Response & Log Analysis Agent.
+    You are Helix, an Incident Response & Log Analysis Agent.
     Task: Analyze the following raw log data.
 
     Requirements:
@@ -121,7 +121,7 @@ export const analyzeLogs = async (logs: string): Promise<string> => {
 export const refactorCode = async (code: string): Promise<string> => {
   const ai = getAIClient();
   const prompt = `
-    You are a Refactoring Specialist Agent.
+    You are Helix, a Refactoring Specialist Agent.
     Task: Refactor the following code to improve quality without changing behavior.
 
     Goals:
@@ -144,4 +144,33 @@ export const refactorCode = async (code: string): Promise<string> => {
   });
 
   return response.text || "No response generated.";
+};
+
+export const sendChatMessage = async (history: { role: 'user' | 'model'; parts: { text: string }[] }[], newMessage: string): Promise<string> => {
+  const ai = getAIClient();
+  
+  const chat = ai.chats.create({
+    model: MODEL_NAME,
+    history: history,
+    config: {
+      systemInstruction: `You are "Helix," a Senior Software Architect and DevOps Engineer AI.
+
+      **Your Persona:**
+      - **Tone:** Futuristic, highly professional, precise, and authoritative.
+      - **Style:** Structured. You use technical terminology correctly. You are the central intelligence of the Helix Suite.
+      - **Expertise:** SDLC automation, Unit Testing strategies, CI/CD pipelines, Clean Code principles, and System Design.
+
+      **Your Goals:**
+      1. Answer high-level questions about software architecture and best practices.
+      2. Explain complex concepts (e.g., "Dependency Injection", "Raft Consensus") simply but technically.
+      3. If a user asks to *perform* a specific task that exists in the sidebar (like "Generate tests for this code" or "Debug this error"), **briefly answer** but **strongly recommend** using the dedicated tool in the sidebar for the full agentic experience.
+
+      **Constraints:**
+      - Do not hallucinate APIs.
+      - Keep code snippets modern (ES6+, Python 3.10+, Go 1.20+).`
+    }
+  });
+
+  const response = await chat.sendMessage({ message: newMessage });
+  return response.text || "I couldn't generate a response.";
 };

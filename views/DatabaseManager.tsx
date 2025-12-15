@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getHistory, clearHistory, importHistory } from '../utils/storage';
-import { HistoryItem } from '../types';
+import { HistoryItem, View } from '../types';
 import { Button } from '../components/Button';
 import { Database, Download, Upload, Trash2, FileText, Calendar } from 'lucide-react';
 
@@ -50,6 +50,12 @@ export const DatabaseManager: React.FC = () => {
         clearHistory();
         setItems([]);
     }
+  };
+
+  // Helper to format the type for display
+  const formatType = (type: View) => {
+    if (type === View.CHAT_ASSISTANT) return "AI ARCHITECT";
+    return type.replace('_', ' ');
   };
 
   return (
@@ -107,7 +113,7 @@ export const DatabaseManager: React.FC = () => {
                 <span className="text-xs font-normal text-slate-500 px-2 py-0.5 bg-slate-900 rounded-full">{items.length} items</span>
             </h3>
             
-            <div className="flex-1 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900">
+            <div className="flex-1 overflow-y-auto rounded-lg border border-slate-700 bg-slate-900 custom-scrollbar">
                 {items.length === 0 ? (
                      <div className="flex flex-col items-center justify-center h-64 text-slate-500">
                         <Database size={48} className="mb-4 opacity-50" />
@@ -127,8 +133,12 @@ export const DatabaseManager: React.FC = () => {
                             {items.map((item) => (
                                 <tr key={item.id} className="hover:bg-slate-800/50">
                                     <td className="p-4">
-                                        <span className="px-2 py-1 rounded text-xs font-medium bg-slate-800 text-indigo-400 border border-slate-700">
-                                            {item.type.replace('_', ' ')}
+                                        <span className={`px-2 py-1 rounded text-xs font-medium border ${
+                                            item.type === View.CHAT_ASSISTANT 
+                                            ? 'bg-indigo-900/30 text-indigo-300 border-indigo-700/50'
+                                            : 'bg-slate-800 text-slate-400 border-slate-700'
+                                        }`}>
+                                            {formatType(item.type)}
                                         </span>
                                     </td>
                                     <td className="p-4 flex items-center gap-2">

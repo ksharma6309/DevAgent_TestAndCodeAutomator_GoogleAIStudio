@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { generateTests } from '../services/geminiService';
 import { saveHistoryItem } from '../utils/storage';
 import { View } from '../types';
@@ -6,12 +6,22 @@ import { Button } from '../components/Button';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { Play, Copy, Check } from 'lucide-react';
 
-export const TestGenerator: React.FC = () => {
-  const [code, setCode] = useState('');
+interface TestGeneratorProps {
+    initialCode?: string;
+}
+
+export const TestGenerator: React.FC<TestGeneratorProps> = ({ initialCode = '' }) => {
+  const [code, setCode] = useState(initialCode);
   const [framework, setFramework] = useState('Jest');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (initialCode) {
+        setCode(initialCode);
+    }
+  }, [initialCode]);
 
   const handleGenerate = async () => {
     if (!code.trim()) return;

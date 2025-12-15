@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { debugCode } from '../services/geminiService';
 import { saveHistoryItem } from '../utils/storage';
 import { View } from '../types';
@@ -6,11 +6,21 @@ import { Button } from '../components/Button';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { Bug, Sparkles } from 'lucide-react';
 
-export const Debugger: React.FC = () => {
-  const [code, setCode] = useState('');
+interface DebuggerProps {
+    initialCode?: string;
+}
+
+export const Debugger: React.FC<DebuggerProps> = ({ initialCode = '' }) => {
+  const [code, setCode] = useState(initialCode);
   const [errorLog, setErrorLog] = useState('');
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialCode) {
+        setCode(initialCode);
+    }
+  }, [initialCode]);
 
   const handleDebug = async () => {
     if (!code.trim()) return;

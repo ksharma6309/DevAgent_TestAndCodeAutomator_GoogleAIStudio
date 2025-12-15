@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { refactorCode } from '../services/geminiService';
 import { saveHistoryItem } from '../utils/storage';
 import { View } from '../types';
@@ -6,10 +6,20 @@ import { Button } from '../components/Button';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { Wrench, GitMerge } from 'lucide-react';
 
-export const RefactorBot: React.FC = () => {
-  const [code, setCode] = useState('');
+interface RefactorBotProps {
+    initialCode?: string;
+}
+
+export const RefactorBot: React.FC<RefactorBotProps> = ({ initialCode = '' }) => {
+  const [code, setCode] = useState(initialCode);
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (initialCode) {
+        setCode(initialCode);
+    }
+  }, [initialCode]);
 
   const handleRefactor = async () => {
     if (!code.trim()) return;

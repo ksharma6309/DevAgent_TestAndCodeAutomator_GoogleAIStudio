@@ -2,12 +2,14 @@ import React from 'react';
 
 export enum View {
   DASHBOARD = 'DASHBOARD',
+  PROJECT_EXPLORER = 'PROJECT_EXPLORER',
   TEST_GENERATOR = 'TEST_GENERATOR',
   DEBUGGER = 'DEBUGGER',
   CODE_REVIEW = 'CODE_REVIEW',
   LOG_ANALYZER = 'LOG_ANALYZER',
   REFACTOR_BOT = 'REFACTOR_BOT',
   DATABASE = 'DATABASE',
+  CHAT_ASSISTANT = 'CHAT_ASSISTANT',
 }
 
 export interface NavItem {
@@ -35,4 +37,10 @@ export interface HistoryItem {
   output: string;
   timestamp: number;
   metadata?: Record<string, any>;
+}
+
+export interface ChatMessage {
+  role: 'user' | 'model';
+  text: string;
+  timestamp: number;
 }

@@ -6,8 +6,12 @@ import { Button } from '../components/Button';
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { ShieldCheck, Search, History, Clock, ChevronRight } from 'lucide-react';
 
-export const CodeReview: React.FC = () => {
-  const [code, setCode] = useState('');
+interface CodeReviewProps {
+    initialCode?: string;
+}
+
+export const CodeReview: React.FC<CodeReviewProps> = ({ initialCode = '' }) => {
+  const [code, setCode] = useState(initialCode);
   const [result, setResult] = useState('');
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -16,6 +20,12 @@ export const CodeReview: React.FC = () => {
   useEffect(() => {
     loadHistory();
   }, []);
+
+  useEffect(() => {
+    if (initialCode) {
+        setCode(initialCode);
+    }
+  }, [initialCode]);
 
   const loadHistory = () => {
     const allHistory = getHistory();
