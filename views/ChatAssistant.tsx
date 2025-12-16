@@ -5,7 +5,11 @@ import { getChatHistoryFromDB, saveHistoryItem, clearChatHistoryFromDB } from '.
 import { MarkdownRenderer } from '../components/MarkdownRenderer';
 import { Bot, User, Sparkles, Terminal, Code2, Cpu, Trash2, ArrowUp, MessageSquare, Dna } from 'lucide-react';
 
-export const ChatAssistant: React.FC = () => {
+interface ChatAssistantProps {
+  initialPrompt?: string;
+}
+
+export const ChatAssistant: React.FC<ChatAssistantProps> = ({ initialPrompt }) => {
   // Initialize state from the main database
   const [messages, setMessages] = useState<ChatMessage[]>(() => getChatHistoryFromDB());
   const [input, setInput] = useState('');
@@ -19,6 +23,13 @@ export const ChatAssistant: React.FC = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
+
+  // Handle incoming context/prompt from other views (e.g. Project Explorer)
+  useEffect(() => {
+    if (initialPrompt) {
+        setInput(initialPrompt);
+    }
+  }, [initialPrompt]);
 
   const handleSend = async (textOverride?: string) => {
     const textToSend = textOverride || input;
@@ -117,7 +128,7 @@ export const ChatAssistant: React.FC = () => {
       </header>
 
       {/* Main Chat Area */}
-      <div className="flex-1 bg-[#030712]/60 rounded-3xl border border-white/5 flex flex-col overflow-hidden relative shadow-2xl backdrop-blur-md">
+      <div className="flex-1 bg-slate-950 rounded-3xl border border-slate-800 flex flex-col overflow-hidden relative shadow-2xl">
         
         {/* Messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar scroll-smooth">
@@ -137,9 +148,9 @@ export const ChatAssistant: React.FC = () => {
                             <button 
                                 key={i}
                                 onClick={() => handleSend(s.prompt)}
-                                className="flex items-center gap-3 p-4 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-cyan-500/40 rounded-xl transition-all group text-left backdrop-blur-sm"
+                                className="flex items-center gap-3 p-4 bg-slate-900 hover:bg-slate-800 border border-slate-800 hover:border-cyan-500/40 rounded-xl transition-all group text-left"
                             >
-                                <span className="p-2 bg-slate-900 rounded-lg text-cyan-400 group-hover:text-white group-hover:bg-cyan-500 transition-colors">
+                                <span className="p-2 bg-slate-950 rounded-lg text-cyan-400 group-hover:text-white group-hover:bg-cyan-500 transition-colors">
                                     {s.icon}
                                 </span>
                                 <span className="text-slate-300 group-hover:text-white font-medium text-sm">{s.label}</span>
@@ -165,7 +176,7 @@ export const ChatAssistant: React.FC = () => {
                             <div className={`rounded-2xl px-6 py-4 shadow-xl ${
                                 msg.role === 'user' 
                                     ? 'bg-gradient-to-br from-indigo-600 to-violet-700 text-white rounded-br-none border border-indigo-400/20' 
-                                    : 'bg-slate-900/90 border border-white/10 text-slate-200 rounded-bl-none backdrop-blur-xl'
+                                    : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none'
                             }`}>
                                 {msg.role === 'user' ? (
                                     <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
@@ -188,7 +199,7 @@ export const ChatAssistant: React.FC = () => {
                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-slate-900 border border-cyan-500/30 flex items-center justify-center">
                         <Dna size={20} className="text-cyan-400" />
                      </div>
-                     <div className="bg-slate-900/50 border border-white/10 rounded-2xl rounded-bl-none px-6 py-4 flex items-center gap-2">
+                     <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-bl-none px-6 py-4 flex items-center gap-2">
                         <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
                         <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
                         <span className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
@@ -199,14 +210,14 @@ export const ChatAssistant: React.FC = () => {
         </div>
 
         {/* Input Area */}
-        <div className="p-4 bg-[#030712]/80 border-t border-white/5 backdrop-blur-xl">
+        <div className="p-4 bg-[#020617] border-t border-slate-800 z-10">
             <div className="relative max-w-4xl mx-auto group">
                 <textarea
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder="Command Helix..."
-                    className="w-full bg-slate-900/50 border border-slate-700 text-slate-200 rounded-2xl pl-5 pr-14 py-4 resize-none h-[60px] focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500/50 focus:outline-none custom-scrollbar shadow-inner transition-all placeholder:text-slate-600 focus:bg-slate-900"
+                    className="w-full bg-slate-900 border border-slate-700 text-slate-100 rounded-2xl pl-5 pr-14 py-4 resize-none h-[60px] focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 focus:outline-none custom-scrollbar transition-all placeholder:text-slate-400 focus:bg-slate-900"
                 />
                 <button 
                     onClick={() => handleSend()}
@@ -217,8 +228,8 @@ export const ChatAssistant: React.FC = () => {
                 </button>
             </div>
             <div className="text-center mt-2">
-                <p className="text-[10px] text-slate-600">
-                    <span className="font-mono bg-slate-900 px-1.5 py-0.5 rounded text-slate-500 border border-slate-800">Return</span> to send
+                <p className="text-xs text-slate-300 font-medium">
+                    <span className="font-mono bg-slate-800 px-1.5 py-0.5 rounded text-white border border-slate-700">Return</span> to send
                 </p>
             </div>
         </div>

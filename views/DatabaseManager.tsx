@@ -73,7 +73,7 @@ export const DatabaseManager: React.FC = () => {
       <div className="bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col space-y-6">
         
         {/* Actions */}
-        <div className="flex flex-wrap gap-4 p-4 bg-slate-900/50 rounded-lg border border-slate-700 items-center justify-between">
+        <div className="flex flex-wrap gap-4 p-4 bg-slate-900 rounded-lg border border-slate-700 items-center justify-between">
             <div className="flex gap-4">
                  <Button onClick={handleDownload} variant="primary">
                     <Download className="w-4 h-4 mr-2" />

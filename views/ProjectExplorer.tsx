@@ -1,7 +1,7 @@
 import React, { useState, useRef, ChangeEvent } from 'react';
 import { View } from '../types';
 import { Button } from '../components/Button';
-import { Folder, FileCode, ChevronRight, ChevronDown, FolderOpen, Play, Bug, ShieldCheck, Wrench, File as FileIcon } from 'lucide-react';
+import { Folder, FileCode, ChevronRight, ChevronDown, FolderOpen, Play, Bug, ShieldCheck, Wrench, File as FileIcon, Upload, List, HelpCircle, Plus, Sparkles, MousePointerClick } from 'lucide-react';
 
 interface ProjectExplorerProps {
   onNavigateWithCode: (view: View, code: string) => void;
@@ -19,7 +19,7 @@ const buildFileTree = (files: FileList): FileNode => {
   const root: FileNode = { name: 'root', path: '', kind: 'directory', children: [] };
 
   Array.from(files).forEach((file) => {
-    const parts = file.webkitRelativePath.split('/');
+    const parts = file.webkitRelativePath ? file.webkitRelativePath.split('/') : [file.name];
     let currentNode = root;
 
     parts.forEach((part, index) => {
@@ -27,7 +27,7 @@ const buildFileTree = (files: FileList): FileNode => {
         // It's a file
         currentNode.children.push({
           name: part,
-          path: file.webkitRelativePath,
+          path: file.webkitRelativePath || file.name,
           kind: 'file',
           children: [],
           file: file,
@@ -70,16 +70,18 @@ const FileTreeItem: React.FC<{
   };
 
   const getIcon = () => {
-    if (node.kind === 'directory') return expanded ? <FolderOpen size={16} className="text-indigo-400" /> : <Folder size={16} className="text-indigo-400" />;
-    if (node.name.endsWith('.ts') || node.name.endsWith('.tsx') || node.name.endsWith('.js') || node.name.endsWith('.jsx')) return <FileCode size={16} className="text-blue-400" />;
+    if (node.kind === 'directory') return expanded ? <FolderOpen size={16} className="text-cyan-400" /> : <Folder size={16} className="text-cyan-400" />;
+    if (node.name.endsWith('.ts') || node.name.endsWith('.tsx') || node.name.endsWith('.js') || node.name.endsWith('.jsx')) return <FileCode size={16} className="text-indigo-400" />;
     return <FileIcon size={16} className="text-slate-500" />;
   };
 
   return (
     <div className="select-none">
       <div
-        className={`flex items-center space-x-2 py-1 px-2 cursor-pointer transition-colors ${
-          isSelected ? 'bg-indigo-600/20 text-indigo-300 border-l-2 border-indigo-500' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800'
+        className={`flex items-center space-x-2 py-1 px-2 cursor-pointer transition-colors border-l-2 ${
+          isSelected 
+            ? 'bg-cyan-900/30 text-cyan-300 border-cyan-500' 
+            : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800 border-transparent'
         }`}
         style={{ paddingLeft: `${level * 12 + 8}px` }}
         onClick={handleClick}
@@ -103,21 +105,33 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onNavigateWith
   const [selectedFile, setSelectedFile] = useState<FileNode | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [selection, setSelection] = useState('');
+  
+  const folderInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const tree = buildFileTree(e.target.files);
-      // Determine the actual root folder (usually the first child of our dummy root)
-      const projectRoot = tree.children.length === 1 && tree.children[0].kind === 'directory' ? tree.children[0] : tree;
-      setRootNode(projectRoot);
-      setSelectedFile(null);
-      setFileContent('');
+      // Determine if we have a single root folder or multiple files
+      const projectRoot = (tree.children.length === 1 && tree.children[0].kind === 'directory') ? tree.children[0] : tree;
+      
+      // If single file upload, flatten appropriately for UI or just set root
+      if (e.target.files.length === 1 && !e.target.files[0].webkitRelativePath) {
+        // Handle single file selection immediately
+         setRootNode(tree);
+         handleSelectFile(tree.children[0]);
+      } else {
+         setRootNode(projectRoot);
+         setSelectedFile(null);
+         setFileContent('');
+      }
     }
   };
 
   const handleSelectFile = async (node: FileNode) => {
     setSelectedFile(node);
+    setSelection('');
     if (node.file) {
       setLoading(true);
       try {
@@ -137,6 +151,42 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onNavigateWith
     }
   };
 
+  const handleAnalysisAction = (type: 'summarize' | 'explain' | 'implement' | 'explain-selection') => {
+    if (!fileContent) return;
+
+    let prompt = '';
+    const codeBlock = selection && type === 'explain-selection' ? selection : fileContent;
+    const contextLabel = selection && type === 'explain-selection' ? 'selected snippet' : 'code';
+
+    switch (type) {
+      case 'summarize':
+        prompt = `Please provide a concise summary of the following file in bullet points. Focus on its main responsibility and key functions:\n\n\`\`\`\n${codeBlock}\n\`\`\``;
+        break;
+      case 'explain':
+        prompt = `Please explain the following ${contextLabel} in detail, breaking down its logic, data flow, and purpose:\n\n\`\`\`\n${codeBlock}\n\`\`\``;
+        break;
+      case 'explain-selection':
+        prompt = `I am highlighting a specific part of the file. Please explain what this snippet does and how it fits into the code:\n\n\`\`\`\n${codeBlock}\n\`\`\``;
+        break;
+      case 'implement':
+        prompt = `I have the following code:\n\n\`\`\`\n${fileContent}\n\`\`\`\n\nI need to implement a new feature: [DESCRIBE FEATURE HERE].\n\nPlease provide the updated code with the new implementation and explain the changes.`;
+        break;
+    }
+    
+    if (prompt) {
+        onNavigateWithCode(View.CHAT_ASSISTANT, prompt);
+    }
+  };
+
+  const handleCodeMouseUp = () => {
+    const sel = window.getSelection();
+    if (sel && sel.toString().trim().length > 0) {
+        setSelection(sel.toString());
+    } else {
+        setSelection('');
+    }
+  };
+
   return (
     <div className="h-full flex flex-col space-y-4 max-h-[calc(100vh-4rem)]">
       <header className="flex-shrink-0 flex justify-between items-end">
@@ -147,34 +197,45 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onNavigateWith
             </span>
             Project Explorer
           </h2>
-          <p className="text-slate-400 mt-1">Visualize project structure and select files for AI processing.</p>
+          <p className="text-slate-400 mt-1">Upload code to analyze, summarize, or refactor.</p>
         </div>
         <div className="flex gap-2">
             <input
                 type="file"
                 ref={fileInputRef}
                 className="hidden"
-                // @ts-ignore - webkitdirectory is non-standard but supported in modern browsers
+                multiple
+                onChange={handleFileUpload}
+            />
+             <input
+                type="file"
+                ref={folderInputRef}
+                className="hidden"
+                // @ts-ignore
                 webkitdirectory=""
                 directory=""
                 multiple
                 onChange={handleFileUpload}
             />
-            <Button onClick={() => fileInputRef.current?.click()} variant="secondary">
+            <Button onClick={() => fileInputRef.current?.click()} variant="secondary" className="text-xs">
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Files
+            </Button>
+            <Button onClick={() => folderInputRef.current?.click()} variant="secondary" className="text-xs">
                 <FolderOpen className="w-4 h-4 mr-2" />
-                Open Project Folder
+                Open Folder
             </Button>
         </div>
       </header>
 
-      <div className="flex-1 grid grid-cols-12 gap-6 min-h-0 bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden backdrop-blur-sm">
+      <div className="flex-1 grid grid-cols-12 gap-6 min-h-0 bg-slate-900 rounded-xl border border-slate-700 overflow-hidden">
         {/* Sidebar Tree */}
-        <div className="col-span-3 bg-slate-900/50 border-r border-slate-700 overflow-y-auto p-2 custom-scrollbar">
+        <div className="col-span-3 bg-slate-900 border-r border-slate-700 overflow-y-auto p-2 custom-scrollbar">
             {!rootNode ? (
                  <div className="h-full flex flex-col items-center justify-center text-slate-600 text-center p-4">
                     <FolderOpen size={32} className="mb-3 opacity-50" />
-                    <p className="text-sm">No folder opened.</p>
-                    <p className="text-xs mt-1">Click "Open Project Folder" to start.</p>
+                    <p className="text-sm">No project loaded.</p>
+                    <p className="text-xs mt-1 text-slate-500">Upload a file or folder to begin analysis.</p>
                  </div>
             ) : (
                 <FileTreeItem node={rootNode} level={0} onSelect={handleSelectFile} selectedPath={selectedFile?.path || null} />
@@ -185,40 +246,102 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({ onNavigateWith
         <div className="col-span-9 flex flex-col h-full overflow-hidden">
             {selectedFile ? (
                 <>
-                    <div className="p-4 border-b border-slate-700 bg-slate-800 flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-slate-300 font-mono text-sm">
-                            <FileCode size={16} className="text-blue-400" />
+                    {/* File Header & Actions */}
+                    <div className="p-3 border-b border-slate-700 bg-slate-900 flex flex-col gap-3">
+                         <div className="flex items-center gap-2 text-slate-300 font-mono text-xs opacity-70">
+                            <FileCode size={14} className="text-indigo-400" />
                             {selectedFile.path}
                         </div>
-                        <div className="flex gap-2">
-                             <Button onClick={() => handleAgentAction(View.TEST_GENERATOR)} variant="primary" className="px-3 py-1 text-xs h-8">
-                                <Play size={14} className="mr-1.5" /> Generate Tests
-                             </Button>
-                             <Button onClick={() => handleAgentAction(View.DEBUGGER)} variant="primary" className="bg-rose-600 hover:bg-rose-700 px-3 py-1 text-xs h-8">
-                                <Bug size={14} className="mr-1.5" /> Debug
-                             </Button>
-                             <Button onClick={() => handleAgentAction(View.CODE_REVIEW)} variant="primary" className="bg-emerald-600 hover:bg-emerald-700 px-3 py-1 text-xs h-8">
-                                <ShieldCheck size={14} className="mr-1.5" /> Review
-                             </Button>
-                             <Button onClick={() => handleAgentAction(View.REFACTOR_BOT)} variant="primary" className="bg-purple-600 hover:bg-purple-700 px-3 py-1 text-xs h-8">
-                                <Wrench size={14} className="mr-1.5" /> Refactor
-                             </Button>
+                        
+                        <div className="flex justify-between items-center">
+                            {/* Standard Tools */}
+                            <div className="flex gap-2">
+                                <Button onClick={() => handleAgentAction(View.TEST_GENERATOR)} variant="secondary" className="px-3 py-1.5 text-xs h-auto bg-slate-800 hover:bg-slate-700 border-slate-600">
+                                    <Play size={14} className="mr-1.5" /> Tests
+                                </Button>
+                                <Button onClick={() => handleAgentAction(View.DEBUGGER)} variant="secondary" className="px-3 py-1.5 text-xs h-auto bg-slate-800 hover:bg-slate-700 border-slate-600">
+                                    <Bug size={14} className="mr-1.5" /> Debug
+                                </Button>
+                                <Button onClick={() => handleAgentAction(View.CODE_REVIEW)} variant="secondary" className="px-3 py-1.5 text-xs h-auto bg-slate-800 hover:bg-slate-700 border-slate-600">
+                                    <ShieldCheck size={14} className="mr-1.5" /> Review
+                                </Button>
+                                <Button onClick={() => handleAgentAction(View.REFACTOR_BOT)} variant="secondary" className="px-3 py-1.5 text-xs h-auto bg-slate-800 hover:bg-slate-700 border-slate-600">
+                                    <Wrench size={14} className="mr-1.5" /> Refactor
+                                </Button>
+                            </div>
+
+                            {/* Separator */}
+                            <div className="h-6 w-px bg-slate-600 mx-2"></div>
+
+                            {/* AI Analysis Tools */}
+                            <div className="flex gap-2">
+                                <Button onClick={() => handleAnalysisAction('summarize')} variant="glow" className="px-3 py-1.5 text-xs h-auto">
+                                    <List size={14} className="mr-1.5" /> Summarize
+                                </Button>
+                                <Button onClick={() => handleAnalysisAction('implement')} variant="glow" className="px-3 py-1.5 text-xs h-auto">
+                                    <Plus size={14} className="mr-1.5" /> Implement
+                                </Button>
+                                <Button onClick={() => handleAnalysisAction('explain')} variant="glow" className="px-3 py-1.5 text-xs h-auto">
+                                    <HelpCircle size={14} className="mr-1.5" /> Explain
+                                </Button>
+                            </div>
                         </div>
                     </div>
-                    <div className="flex-1 overflow-auto bg-[#0d1117] p-4 custom-scrollbar">
+
+                    {/* Code Viewer */}
+                    <div className="flex-1 overflow-auto bg-[#0d1117] p-4 custom-scrollbar relative group">
                         {loading ? (
-                            <div className="flex items-center justify-center h-full text-slate-500">Loading...</div>
+                            <div className="flex items-center justify-center h-full text-slate-500">
+                                <Sparkles className="animate-spin mr-2" /> Loading content...
+                            </div>
                         ) : (
-                            <pre className="text-sm font-mono text-blue-100">
-                                <code>{fileContent}</code>
-                            </pre>
+                            <>
+                                <pre 
+                                    className="text-sm font-mono text-blue-100" 
+                                    onMouseUp={handleCodeMouseUp}
+                                >
+                                    <code>{fileContent}</code>
+                                </pre>
+                                
+                                <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+                                     {/* Selection Action */}
+                                    {selection && (
+                                        <div className="animate-in fade-in slide-in-from-top-2 z-20">
+                                            <Button onClick={() => handleAnalysisAction('explain-selection')} variant="primary" className="shadow-xl px-4 py-2 text-xs">
+                                                <MousePointerClick size={14} className="mr-2" />
+                                                Explain Selection
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {/* Quick Summary Action (Visible on Hover) */}
+                                    {!selection && (
+                                         <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-10">
+                                            <Button 
+                                                onClick={() => handleAnalysisAction('summarize')} 
+                                                variant="secondary" 
+                                                className="shadow-lg px-3 py-2 text-xs bg-slate-800/90 border-slate-600 hover:bg-slate-700"
+                                                title="Generate bullet-point summary"
+                                            >
+                                                <List size={14} className="mr-2 text-cyan-400" />
+                                                Summarize File
+                                            </Button>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
                         )}
                     </div>
                 </>
             ) : (
                 <div className="h-full flex flex-col items-center justify-center text-slate-600">
-                    <FileCode size={48} className="mb-4 opacity-50" />
-                    <p>Select a file from the tree to view content and actions.</p>
+                    <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4">
+                        <Upload size={32} className="opacity-50" />
+                    </div>
+                    <p className="font-medium">Select a file to view content</p>
+                    <p className="text-xs mt-1 text-slate-500 max-w-xs text-center">
+                        Upload code to enable the Test Generator, Debugger, and AI Analysis tools.
+                    </p>
                 </div>
             )}
         </div>

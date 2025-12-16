@@ -90,7 +90,7 @@ export const CodeReview: React.FC<CodeReviewProps> = ({ initialCode = '' }) => {
         {/* History Sidebar Overlay */}
         {showHistory && (
             <div className="absolute top-0 right-0 h-full w-80 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl z-20 flex flex-col overflow-hidden animate-in slide-in-from-right duration-200">
-                <div className="p-4 border-b border-slate-800 bg-slate-800/50 flex justify-between items-center">
+                <div className="p-4 border-b border-slate-800 bg-slate-800 flex justify-between items-center">
                     <h3 className="font-semibold text-slate-200">Recent Audits</h3>
                     <button onClick={() => setShowHistory(false)} className="text-slate-500 hover:text-white">
                         <ChevronRight size={20} />

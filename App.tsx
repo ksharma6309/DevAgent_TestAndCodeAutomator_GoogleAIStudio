@@ -32,7 +32,7 @@ const App: React.FC = () => {
       case View.DASHBOARD:
         return <Dashboard onNavigate={handleNavigate} />;
       case View.CHAT_ASSISTANT:
-        return <ChatAssistant />;
+        return <ChatAssistant initialPrompt={sharedCode} />;
       case View.PROJECT_EXPLORER:
         return <ProjectExplorer onNavigateWithCode={handleNavigateWithCode} />;
       case View.TEST_GENERATOR:

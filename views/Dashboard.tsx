@@ -41,7 +41,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </h1>
                 <p className="text-slate-400">Real-time overview of your autonomous development lifecycle.</p>
             </div>
-            <div className="flex items-center space-x-2 text-xs text-cyan-400 bg-cyan-950/30 px-3 py-1.5 rounded-full border border-cyan-500/20 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
+            <div className="flex items-center space-x-2 text-xs text-cyan-400 bg-slate-900 px-3 py-1.5 rounded-full border border-cyan-500/20 shadow-[0_0_10px_rgba(6,182,212,0.1)]">
                 <Database size={12} className="text-cyan-400" />
                 <span className="font-mono tracking-wide">LOCAL_DB: ACTIVE</span>
             </div>
@@ -49,8 +49,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-[#0f172a]/40 p-6 rounded-2xl border border-white/5 shadow-xl backdrop-blur-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all"></div>
+            <div className="bg-slate-900 p-6 rounded-2xl border border-white/5 shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/10 rounded-full group-hover:bg-indigo-500/20 transition-all"></div>
                 <div className="flex justify-between items-start relative z-10">
                     <div>
                         <p className="text-slate-400 text-sm font-medium">Tests Generated</p>
@@ -62,8 +62,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </div>
             </div>
 
-            <div className="bg-[#0f172a]/40 p-6 rounded-2xl border border-white/5 shadow-xl backdrop-blur-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full blur-2xl group-hover:bg-rose-500/20 transition-all"></div>
+            <div className="bg-slate-900 p-6 rounded-2xl border border-white/5 shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-rose-500/10 rounded-full group-hover:bg-rose-500/20 transition-all"></div>
                 <div className="flex justify-between items-start relative z-10">
                     <div>
                         <p className="text-slate-400 text-sm font-medium">Bugs Neutralized</p>
@@ -75,8 +75,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </div>
             </div>
 
-            <div className="bg-[#0f172a]/40 p-6 rounded-2xl border border-white/5 shadow-xl backdrop-blur-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full blur-2xl group-hover:bg-amber-500/20 transition-all"></div>
+            <div className="bg-slate-900 p-6 rounded-2xl border border-white/5 shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/10 rounded-full group-hover:bg-amber-500/20 transition-all"></div>
                 <div className="flex justify-between items-start relative z-10">
                     <div>
                         <p className="text-slate-400 text-sm font-medium">Code Audits</p>
@@ -88,8 +88,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </div>
             </div>
 
-             <div className="bg-[#0f172a]/40 p-6 rounded-2xl border border-white/5 shadow-xl backdrop-blur-sm relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
+             <div className="bg-slate-900 p-6 rounded-2xl border border-white/5 shadow-xl relative overflow-hidden group">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-cyan-500/10 rounded-full group-hover:bg-cyan-500/20 transition-all"></div>
                 <div className="flex justify-between items-start relative z-10">
                     <div>
                         <p className="text-slate-400 text-sm font-medium">Refactor Ops</p>
@@ -104,7 +104,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
         {/* Chart Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-            <div className="lg:col-span-2 bg-[#0f172a]/60 p-8 rounded-2xl border border-white/5 shadow-2xl backdrop-blur-md">
+            <div className="lg:col-span-2 bg-slate-900 p-8 rounded-2xl border border-white/5 shadow-2xl">
                 <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
                     <Activity size={18} className="text-indigo-400" />
                     System Activity
@@ -162,12 +162,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                 </div>
             </div>
 
-            <div className="bg-[#0f172a]/60 p-8 rounded-2xl border border-white/5 shadow-2xl backdrop-blur-md">
+            <div className="bg-slate-900 p-8 rounded-2xl border border-white/5 shadow-2xl">
                 <h3 className="text-lg font-semibold text-white mb-6">Quick Launch</h3>
                 <div className="space-y-4">
                     <button 
                         onClick={() => onNavigate(View.TEST_GENERATOR)}
-                        className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-slate-800/50 to-slate-800/30 hover:from-indigo-900/40 hover:to-indigo-800/20 border border-white/5 hover:border-indigo-500/50 transition-all group relative overflow-hidden"
+                        className="w-full text-left p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/5 hover:border-indigo-500/50 transition-all group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <h4 className="font-medium text-slate-200 group-hover:text-indigo-300 relative z-10">Initialize Test Forge</h4>
@@ -175,7 +175,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     </button>
                     <button 
                         onClick={() => onNavigate(View.DEBUGGER)}
-                        className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-slate-800/50 to-slate-800/30 hover:from-rose-900/40 hover:to-rose-800/20 border border-white/5 hover:border-rose-500/50 transition-all group relative overflow-hidden"
+                        className="w-full text-left p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/5 hover:border-rose-500/50 transition-all group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-rose-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <h4 className="font-medium text-slate-200 group-hover:text-rose-300 relative z-10">Deploy Auto-Debugger</h4>
@@ -183,7 +183,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
                     </button>
                     <button 
                          onClick={() => onNavigate(View.CODE_REVIEW)}
-                        className="w-full text-left p-4 rounded-xl bg-gradient-to-r from-slate-800/50 to-slate-800/30 hover:from-emerald-900/40 hover:to-emerald-800/20 border border-white/5 hover:border-emerald-500/50 transition-all group relative overflow-hidden"
+                        className="w-full text-left p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/5 hover:border-emerald-500/50 transition-all group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <h4 className="font-medium text-slate-200 group-hover:text-emerald-300 relative z-10">Run Code Auditor</h4>

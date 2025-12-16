@@ -20,7 +20,7 @@ export const Button: React.FC<ButtonProps> = ({
   
   const variants = {
     primary: "bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white focus:ring-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.3)] hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] border border-indigo-400/20",
-    secondary: "bg-slate-800/50 hover:bg-slate-800 text-slate-200 focus:ring-slate-500 border border-slate-700/50 backdrop-blur-sm hover:border-slate-600",
+    secondary: "bg-slate-800 hover:bg-slate-700 text-slate-200 focus:ring-slate-500 border border-slate-700 hover:border-slate-600",
     danger: "bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white focus:ring-rose-500 shadow-[0_0_15px_rgba(225,29,72,0.3)] border border-rose-400/20",
     glow: "bg-cyan-950/30 text-cyan-400 border border-cyan-500/30 hover:bg-cyan-900/40 hover:border-cyan-400/60 shadow-[0_0_10px_rgba(6,182,212,0.1)] hover:shadow-[0_0_20px_rgba(6,182,212,0.2)]"
   };

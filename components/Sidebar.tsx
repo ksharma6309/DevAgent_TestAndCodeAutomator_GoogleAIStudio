@@ -33,10 +33,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
   ];
 
   return (
-    <aside className="w-64 bg-[#020617]/80 backdrop-blur-xl border-r border-slate-800/60 flex-shrink-0 flex flex-col h-screen fixed left-0 top-0 z-10 shadow-2xl">
+    <aside className="w-64 bg-[#020617] border-r border-slate-800 flex-shrink-0 flex flex-col h-screen fixed left-0 top-0 z-10 shadow-2xl">
       <div className="p-6 flex items-center space-x-3 border-b border-slate-800/60 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent">
         <div className="p-2 relative group">
-           <div className="absolute inset-0 bg-cyan-500 blur-lg opacity-20 group-hover:opacity-40 transition-opacity rounded-full"></div>
+           <div className="absolute inset-0 bg-cyan-500 opacity-20 group-hover:opacity-40 transition-opacity rounded-full"></div>
             <div className="relative bg-gradient-to-br from-cyan-500 to-indigo-600 rounded-xl p-2 shadow-lg shadow-cyan-500/20 text-white">
                 <Dna className="w-6 h-6" />
             </div>
@@ -52,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-6 px-3 custom-scrollbar">
+      <nav className="flex-1 overflow-y-auto py-6 px-3 custom-scrollbar bg-[#020617]">
         <div className="mb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Core Modules</div>
         <ul className="space-y-1.5">
           {navItems.map((item) => (
@@ -61,8 +61,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
                 onClick={() => onNavigate(item.id)}
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 group relative overflow-hidden border border-transparent ${
                   currentView === item.id 
-                    ? 'bg-slate-800/40 text-cyan-300 border-slate-700/50 shadow-inner' 
-                    : 'text-slate-400 hover:bg-slate-800/30 hover:text-slate-200 hover:border-slate-800'
+                    ? 'bg-slate-800 text-cyan-300 border-slate-700 shadow-inner' 
+                    : 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-200 hover:border-slate-800'
                 }`}
               >
                 {/* Glow effect on active */}
@@ -89,10 +89,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentView, onNavigate }) => 
         </ul>
       </nav>
 
-      <div className="p-4 border-t border-slate-800/60 bg-slate-950/30">
-        <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-800/80 relative overflow-hidden group">
-          <div className="absolute -right-4 -top-4 w-12 h-12 bg-cyan-500/20 blur-xl rounded-full group-hover:bg-cyan-500/30 transition-colors"></div>
-          <p className="font-semibold text-slate-300 text-xs">Helix Suite v2.0</p>
+      <div className="p-4 border-t border-slate-800 bg-[#020617]">
+        <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 relative overflow-hidden group">
+          <div className="absolute -right-4 -top-4 w-12 h-12 bg-cyan-500/20 group-hover:bg-cyan-500/30 transition-colors"></div>
+          <p className="font-semibold text-white text-xs">Helix Suite v2.0</p>
           <div className="flex items-center gap-2 mt-2">
              <div className="h-1 flex-1 bg-slate-800 rounded-full overflow-hidden">
                 <div className="h-full w-3/4 bg-gradient-to-r from-cyan-500 to-indigo-500 rounded-full"></div>
